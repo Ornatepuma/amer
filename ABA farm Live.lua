@@ -5,7 +5,6 @@
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local HttpService = game:GetService("HttpService")
 local request = syn and syn.request or http_request or (http and http.request)
-_G.webhook = "https://discord.com/api/webhooks/1349478650872856596/w38aUcZ23sUgmqMzNfiViaTa5srUdMp1q49hog9EXFyaL59D3uWJ3W-4I4cEfMJf3eQV"
 local player = game.Players.LocalPlayer
 local Rematch = game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
 local workspaceService = game:GetService("Workspace")
