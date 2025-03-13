@@ -17,9 +17,7 @@ local function AntiAfk()
     if NoAFK == true then
         while NoAFK do
             game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
-            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Two, false, nil) -- Press "2"
-            wait(0.1)
-            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Two, false, nil) -- Release "2"
+
         end
     end
 end
@@ -36,7 +34,10 @@ local function Reset()
                 wait(1)
                 game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
                 print("Voted rematch")
-            
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Two, false, nil) -- Press "2"
+                wait(0.1)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Two, false, nil) -- Release "2"
+                
             elseif deaths.Value >= 4 or deaths.Value <= 4 then
             
                 if player.Character and player.Character:FindFirstChild("Humanoid") and resetLoopActive == true then
