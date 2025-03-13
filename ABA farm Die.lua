@@ -61,9 +61,9 @@ end
 workspaceService.ChildAdded:Connect(function(child)
     if child.Name == "Map" then
         print("Map Spawned antiafk and reset")
+        Reset()
         NoAFK = true
         AntiAfk()
-        Reset()
     end
 end)
 
