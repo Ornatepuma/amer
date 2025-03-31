@@ -9,4 +9,6 @@ local function Teleport(position)
     end
 end
 
-Teleport(Vector3.new(1, 1000, 0))
+for i, v in pairs(game.workspace.Live:GetChildren() do
+    Teleport(v.HumanoidRootPart.Position)
+end
