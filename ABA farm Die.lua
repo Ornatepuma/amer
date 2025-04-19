@@ -12,10 +12,8 @@ _G.Play = false
 
 print("executed DEATH", player.Name)
 
-local function AFK()
-    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Two, false, nil) -- Press "2"
-    wait(0.1)
-    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Two, false, nil) -- Release "2"
+for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
+    v:Disable()
 end
 
 local function Reset()
@@ -30,7 +28,6 @@ local function Reset()
                 wait(1)
                 game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
                 print("Voted rematch")
-                AFK()
 
             elseif deaths.Value >= 4 or deaths.Value <= 4 then
             
@@ -68,4 +65,3 @@ workspaceService.ChildRemoved:Connect(function(child)
         print("Stopping reset loop and changed respawn time", waitTime)
     end
 end)
-
