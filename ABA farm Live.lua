@@ -10,16 +10,14 @@ local Rematch = game:GetService("ReplicatedStorage"):WaitForChild("RematchVote")
 local workspaceService = game:GetService("Workspace")
 local NoAFK = false
 
-local function AntiAfk()
-    if NoAFK == true then
-        while NoAFK do
-            game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
-            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Two, false, nil) -- Press "2"
-            wait(0.1)
-            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Two, false, nil) -- Release "2"
-        end
-    end
+while true do
+    wait(3)
+    game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
 end
+
+for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
+    v:Disable()
+  end
 
 if not player then
     warn("Player is nil! Cannot proceed.")
