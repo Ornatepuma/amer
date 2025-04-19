@@ -10,10 +10,15 @@ local Rematch = game:GetService("ReplicatedStorage"):WaitForChild("RematchVote")
 local workspaceService = game:GetService("Workspace")
 local NoAFK = false
 print("executed", player.Name)
-while true do
-    wait(3)
-    game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
-end
+
+
+spawn(function()
+    while true do
+        wait(3)
+        game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
+    end
+end)
+
 
 for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
     v:Disable()
@@ -80,7 +85,6 @@ workspaceService.ChildAdded:Connect(function(MapAdded)
         print("Map detected! Starting Rematch", player.Name)
         sendWeb(65280, "User", player)
         NoAFK = true
-        AntiAfk()
     end
 end)
 
