@@ -9,7 +9,7 @@ local player = game.Players.LocalPlayer
 local Rematch = game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
 local workspaceService = game:GetService("Workspace")
 local NoAFK = false
-print("executed", player.Name)
+print("executed Live on", player.Name)
 
 
 spawn(function()
@@ -28,7 +28,6 @@ if not player then
     warn("Player is nil! Cannot proceed.")
     return
 end
-print("Made it past AFK")
 
 local function sendWeb(color, role, player)
     if not request then
