@@ -9,25 +9,23 @@ local player = game.Players.LocalPlayer
 local Rematch = game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
 local workspaceService = game:GetService("Workspace")
 local NoAFK = false
-print("executed Live on", player.Name)
 
-
-spawn(function()
-    while true do
-        wait(3)
-        game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
+local function AntiAfk()
+    if NoAFK == true then
+        while NoAFK do
+            game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
+            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Two, false, nil) -- Press "2"
+            wait(0.1)
+            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Two, false, nil) -- Release "2"
+        end
     end
-end)
-
-
-for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
-    v:Disable()
-  end
+end
 
 if not player then
     warn("Player is nil! Cannot proceed.")
     return
 end
+print("executed LIVE", player.Name)
 
 local function sendWeb(color, role, player)
     if not request then
@@ -84,9 +82,14 @@ workspaceService.ChildAdded:Connect(function(MapAdded)
         print("Map detected! Starting Rematch", player.Name)
         sendWeb(65280, "User", player)
         NoAFK = true
+        AntiAfk()
     end
 end)
-
+game.Players.LocalPlayer.PlayerGui.ChildAdded:Connect(function(v)
+    if v.Name == "BanChooser" then 
+        v:WaitForChild("rem"):FireServer("pass")
+    end
+end)
 workspaceService.ChildRemoved:Connect(function(MapRemoved)
     if MapRemoved.Name == "Map" then
         NoAFK = false
