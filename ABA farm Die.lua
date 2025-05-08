@@ -21,7 +21,7 @@ game.Players.LocalPlayer.PlayerGui.ChildAdded:Connect(function(v)
 end)
 game.Players.LocalPlayer.CharacterAdded:Connect(function()
     if workspace:FindFirstChild("Map") then 
-        task.wait(0.1)
+        task.wait(0.3)
         game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Health = 0
         game.Players.LocalPlayer.Character.Humanoid:ChangeState(3)
         pcall(function()
