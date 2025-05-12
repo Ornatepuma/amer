@@ -5,6 +5,9 @@ function Rematch()
     game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
 end
 
+for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
+  v:Disable()
+end
 
 workspace.ChildAdded:Connect(function(c)
     if c.Name == "Map" then 
