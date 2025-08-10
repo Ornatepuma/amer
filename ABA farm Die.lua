@@ -3,6 +3,8 @@
 
 function Rematch()
     game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
+    game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
+    game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
 end
 
 for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
@@ -32,3 +34,4 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function()
         end)
     end
 end)
+
