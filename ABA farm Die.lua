@@ -21,7 +21,7 @@ workspace.ChildAdded:Connect(function(c)
 end)
 game.Players.LocalPlayer.PlayerGui.ChildAdded:Connect(function(v)
     if v.Name == "BanChooser" then 
-        v:WaitForChild("rem"):FireServer("pass")
+        v:WaitForChild("Communicate"):FireServer("pass")
     end
 end)
 game.Players.LocalPlayer.CharacterAdded:Connect(function()
@@ -34,4 +34,3 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function()
         end)
     end
 end)
-
