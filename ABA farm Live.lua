@@ -80,7 +80,7 @@ workspaceService.ChildAdded:Connect(function(MapAdded)
 end)
 game.Players.LocalPlayer.PlayerGui.ChildAdded:Connect(function(v)
     if v.Name == "BanChooser" then 
-        v:WaitForChild("rem"):FireServer("pass")
+        v:WaitForChild("Communicate"):FireServer("pass")
     end
 end)
 workspaceService.ChildRemoved:Connect(function(MapRemoved)
