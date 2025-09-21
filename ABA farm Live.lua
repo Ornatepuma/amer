@@ -6,7 +6,9 @@ local VirtualInputManager = game:GetService("VirtualInputManager")
 local HttpService = game:GetService("HttpService")
 local request = syn and syn.request or http_request or (http and http.request)
 local player = game.Players.LocalPlayer
-local Rematch = game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
+local function Rematch()
+    game:GetService("ReplicatedStorage"):WaitForChild("RematchVote"):FireServer()
+end
 local workspaceService = game:GetService("Workspace")
 local NoAFK = false
 
@@ -14,9 +16,8 @@ for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
   v:Disable()
 end
 
-if not player then
-    warn("Player is nil! Cannot proceed.")
-    return
+while task.wait(1) do
+    Rematch()
 end
 print("executed LIVE", player.Name)
 
@@ -75,7 +76,6 @@ workspaceService.ChildAdded:Connect(function(MapAdded)
         print("Map detected! Starting Rematch", player.Name)
         sendWeb(65280, "User", player)
         NoAFK = true
-        AntiAfk()
     end
 end)
 game.Players.LocalPlayer.PlayerGui.ChildAdded:Connect(function(v)
@@ -87,4 +87,4 @@ workspaceService.ChildRemoved:Connect(function(MapRemoved)
     if MapRemoved.Name == "Map" then
         NoAFK = false
     end
-end)
+end)    
