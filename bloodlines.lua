@@ -4,6 +4,8 @@ local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local root = character:WaitForChild("HumanoidRootPart")
 local de = RS:WaitForChild("Events"):WaitForChild("DataEvent")
+local RunService = game:GetService("RunService")
+local camera = workspace.CurrentCamera
 local pickupRange = 10
 local fruits = {
 	"Banana", "Orange", "Fruit Of Forgetfulness", "Pear",
@@ -49,4 +51,31 @@ while task.wait(0.2) do
 			end
 		end
 	end
+end
+
+
+
+
+
+
+
+
+-- ESP
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "GUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local Active_Gui = {}
+
+for _, v in pairs(workspace:GetChildren()) do
+    if isFruit(v.Name) or isTrinket(v.Name) then
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(0, 100, 0, 20)
+		label.BackgroundTransparency = 1
+		label.TextColor3 = Color3.new(255, 255, 255)
+		label.Text = v.Name
+		label.Visible = true
+		label.Parent = screenGui
+    end
 end
