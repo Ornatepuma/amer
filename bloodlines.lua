@@ -4,8 +4,7 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 local request = syn and syn.request or http_request or (http and http.request)
 local event = game:GetService("ReplicatedStorage").Events.DataEvent
 
-
-    local Window = Fluent:CreateWindow({
+local Window = Fluent:CreateWindow({
             Title = "BloodLines" .. Fluent.Version,
             SubTitle = "Puma",
             TabWidth = 160,
@@ -23,7 +22,13 @@ local event = game:GetService("ReplicatedStorage").Events.DataEvent
     local illu_noti = Tabs.Main:AddToggle("Toggle", {Title = "Illu Notifier", Default = true})
     local detected = {} -- stores names of Illus already notified
 
+    
+    
+    
+    
+    
     illu_noti:OnChanged(function(state)
+        table.clear(detected)
         if state then
             task.spawn(function()
                 while illu_noti.Value do
@@ -31,19 +36,24 @@ local event = game:GetService("ReplicatedStorage").Events.DataEvent
                     for _, v in pairs(game.ReplicatedStorage.Cooldowns:GetChildren()) do
                         for _, move in pairs(v:GetChildren()) do
                             if move.Name == "Chakra Sense" and not detected[v.Name] then
+                                local fart = workspace:FindFirstChild(v.Name)
+                                local poo
+                                if fart then
+                                    local name = fart.Humanoid:GetAttribute("DisplayName")
+                                end
+                                
+                                
+                                
                                 detected[v.Name] = true
                                 Fluent:Notify({
                                     Title = "ILLU DETECTED",
-                                    Content = v.Name .. " HAS CHAKRA SENSE"
+                                    Content = name .. " HAS CHAKRA SENSE"
                                 })
                             end
                         end
                     end
                 end
             end)
-        else
-            -- Reset when toggle is off (optional)
-            table.clear(detected)
         end
     end)
 
@@ -83,22 +93,76 @@ local event = game:GetService("ReplicatedStorage").Events.DataEvent
         end
     })
 
+local fd = {}
+
+for i, v in pairs(workspace:GetChildren()) do
+    if not v:IsA("BasePart") and not v:FindFirstChild("Pickupable") then
+        table.insert(fd, v)
+    end
+end
+
+-- auto pickup
+local params = OverlapParams.new()
+params.FilterDescendantsInstances = fd
+params.FilterType = Enum.RaycastFilterType.Exclude
+
+local pick = Tabs.Main:AddToggle("Toggle", {Title = "Auto Pickup Fruits And Trinkets", Default = false})
+
+pick:OnChanged(function(state)
+    if state then
+        task.spawn(function()
+            while pick.Value do
+                wait(.25)
+                for i, v in pairs(workspace:GetPartBoundsInBox(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame, Vector3.new(15,15,15), params)) do
+                    if v:FindFirstChild("Pickupable") then
+                        event:FireServer("PickUp", v.ID.Value)
+                    elseif v:FindFirstChild("SpawnTime") and v:FindFirstChild("ItemDetector") then
+                        fireclickdetector(v.ItemDetector)
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+
+local nofall = Tabs.Main:AddToggle("Toggle", {Title = "No Fall", Default = false})
+
+nofall:OnChanged(function(state)
+    nofalltoggle = state
+end)
+
+local oldnc;
+oldnc = hookmetamethod(game,"__namecall",function(self, ...)
+    if getnamecallmethod() == "FireServer" then
+        local args = {...}
+        if args[1] == "TakeDamage" and nofalltoggle then return end
+        if args[1] == "StopCharging" and autocharge.Value then return end
+    end
+    return oldnc(self, ...)
+end)
 
 
 
 
 
-    SaveManager:SetLibrary(Fluent)
-    InterfaceManager:SetLibrary(Fluent)
-    SaveManager:IgnoreThemeSettings()
-    SaveManager:SetIgnoreIndexes({})
-    InterfaceManager:SetFolder("FluentScriptHub")
-    SaveManager:SetFolder("FluentScriptHub/specific-game")
-    InterfaceManager:BuildInterfaceSection(Tabs.Settings)
-    SaveManager:BuildConfigSection(Tabs.Settings)
 
-    Window:SelectTab(1)
-    Fluent:Notify({ Title = "Fluent", Content = "The script has been loaded.", Duration = 8 })
-    SaveManager:LoadAutoloadConfig()
 
+
+
+
+
+
+
+SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
+SaveManager:IgnoreThemeSettings()
+SaveManager:SetIgnoreIndexes({})
+InterfaceManager:SetFolder("FluentScriptHub")
+SaveManager:SetFolder("FluentScriptHub/specific-game")
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+SaveManager:BuildConfigSection(Tabs.Settings)
+Window:SelectTab(1)
+Fluent:Notify({ Title = "Fluent", Content = "The script has been loaded.", Duration = 8 })
+SaveManager:LoadAutoloadConfig()
 
