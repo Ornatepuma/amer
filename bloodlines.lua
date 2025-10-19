@@ -28,14 +28,6 @@ checkloaded()
 
 
 
-
-
-
-
-
-
-
-
 local Window = Fluent:CreateWindow({
             Title = "BloodLines" .. Fluent.Version,
             SubTitle = "Puma",
@@ -116,64 +108,6 @@ illu_noti:OnChanged(function(state)
 end)
 
 
-
--- local listillu = Tabs.Main:AddButton({Title = "List Current Illu", Description = "Press to List all the current illus in your server"})
-
-
-
-
-    
-    
---[[illu_noti:OnChanged(function(state)
-    table.clear(detected)
-    if state then
-        task.spawn(function()
-            while illu_noti.Value do
-                task.wait(1)
-                for _, v in pairs(game.ReplicatedStorage.Cooldowns:GetChildren()) do
-                    
-                    for _, move in pairs(v:GetChildren()) do
-                        
-                        if move.Name == "Chakra Sense" and not detected[v.Name] then
-                            local user = v.Name
-                            
-                            print("setuser")
-                            
-                            local fart = workspace:FindFirstChild(v.Name)
-                            if fart then
-                                
-                                print(fart)
-
-                            end
-                            local displayName
-                            
-                            
-                            --if fart and fart:FindFirstChild("Humanoid") then
-                            
-                            displayName = fart.Humanoid:GetAttribute("DisplayName") 
-                            if displayName then
-                                
-                                user = displayName
-                                print(displayName)
-
-                            end
-                            --end
-
-                            detected[v.Name] = true
-                            Fluent:Notify({
-                                Title = "ILLU DETECTED",
-                                Content = user .. " HAS CHAKRA SENSE"
-                            })
-                        end
-                    end
-                end
-            end
-        end)
-    end
-end)]]
-
-
-
     local autocharge = Tabs.Main:AddToggle("Toggle", {Title = "Auto Charge Mana", Default = false})
     -- autocharge
     autocharge:OnChanged(function(state)
@@ -245,40 +179,6 @@ local nofall = Tabs.Main:AddToggle("Toggle", {Title = "No Fall", Default = false
 nofall:OnChanged(function(state)
     nofalltoggle = state
 end)
-
--- Hold m1
---[[local holdm1 = Tabs.Main:AddToggle("Toggle", {Title = "Hold M1", Defualt = false})
-
-holdm1:OnChanged(function(state)
-    if state then
-
-    UserInputService.InputBegan:Connect(function(input, gameProcessed)
-            if gameProcessed then return end
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                holdingClick = true
-            end
-        end)
-
-
-
-        UserInputService.InputEnded:Connect(function(input, gameProcessed)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                holdingClick = false
-                print("Mouse button released")
-            end
-        end)
-
-
-        task.spawn(function()
-            while holdingm1.Value do
-                task.wait(0.1)
-                if holdingClick then
-                    event:FireServer("CheckMeleeHit",nil ,"NormalAttack", false)
-                end
-            end
-        end)
-    end)
-end]]
 -- fullbright
 local fullbright = Tabs.Visuals:AddToggle("Toggle", {Title = "FullBright", Default = false})
 local oldbright = Lighting.Brightness
@@ -365,7 +265,7 @@ for _, child in pairs(chakrapoint:GetChildren()) do
         end
     end
 end
-
+-- killbricks
 local nokillbricks = Tabs.Main:AddToggle("Toggle",{Title = "Remove Kill Bricks", Default = false})
 
 nokillbricks:OnChanged(function(state)
@@ -384,7 +284,7 @@ nokillbricks:OnChanged(function(state)
                 end
             end
         end
-        for _, v in pairs(workspace:GetChildren(workspace:GetChildren())) do
+        for _, v in pairs(workspace:GetChildren()) do
             if v.Name == "HyugaVoids" or "Model" or "SandWormVoid" then
                 for _, voids in pairs(v:GetChildren()) do
                     if voids.Name == "Void" then
@@ -518,6 +418,7 @@ hoponillu:OnChanged(function(state)
                     while illu do
                         getservers()
                         event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2])
+                        print("hopping on illu")
                         wait(.1)
                     end
                 end
@@ -541,10 +442,12 @@ startbot:OnChanged(function(state) -- start of bot
                 getservers()
                 if Golem == nil then
                     event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2])
+                    print("no golem found hopping")
                 end
-                local GolemRoot = Golem.HumanoidRootPart
+                local GolemRoot = Golem:FindFirstChild("HumanoidRootPart")
                 if GolemRoot == nil then
                     event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2])
+                    print("no golem root found hopping")
                 end
                 local badandevil = {"rbxassetid://120758909308511","rbxassetid://116907126244057"}
                 local tploop;
@@ -557,7 +460,7 @@ startbot:OnChanged(function(state) -- start of bot
                         mag = (workspace.Debris:FindFirstChild("WoodenDragonHead"):GetPivot().p - GolemRoot.Position + Vector3.new(0,GolemRoot.Size.Y/1.5,0)).Magnitude < 50
                     end
                     local goooo = CFrame.new(GolemRoot.Position - GolemRoot.CFrame.LookVector * 5 + Vector3.new(0,GolemRoot.Size.Y/1.5,0),GolemRoot.Position)
-                    wait(3)
+                    wait(20)
                     HumanoidRootPart.CFrame = (safe or mag) and CFrame.new(GolemRoot.Position + Vector3.new(0,200,0)) or goooo
                     potato.CFrame = GolemRoot.CFrame + Vector3.new(0,196,0)
                 end)
@@ -597,7 +500,7 @@ startbot:OnChanged(function(state) -- start of bot
 
 
 
-                while task.wait() and Humanoid.Health > 0 do
+                while task.wait() and Humanoid == nil or Humanoid.Health > 1 do
                     if not safe then
                         event:FireServer("CheckMeleeHit",nil ,"NormalAttack", false)
                     else
@@ -608,15 +511,17 @@ startbot:OnChanged(function(state) -- start of bot
                         repeat task.wait() until not safe
                     end
                 end
-                -- start autoloot                
-                for i, v in pairs(workspace.WoodenGolemRewards:GetChildren()) do
-                    for i, reward in pairs(v:GetChildren()) do
+                -- start autoloot    
+                print("Starting Auto Loot")            
+                for _, v in pairs(workspace.WoodenGolemRewards:GetChildren()) do
+                    for _, reward in pairs(v:GetChildren()) do
+                        print("found reward")
                         if string.find("Spawn") then
                             local waititme = 7
                             pick.Value = true
                             HumanoidRootPart.CFrame = reward.CFrame
                             wait(waititme)
-                            waititme = waititme - 1.2
+                            waititme = waititme * .4
                         end
                     end
                 end
@@ -638,8 +543,9 @@ hopifnear:OnChanged(function(state)
                     if v:FindFirstChild("Humanoid") and v.Name ~= player.Name then
                         local distance = (v.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
                         local golemdistance = (v.HumanoidRootPart.Position - workspace:WaitForChild("Wooden Golem").HumanoidRootPart.Position).Magnitude
-                        if distance < 100 or golemdistance < 500 then
+                        if distance < 50 or golemdistance < 250 then
                             getservers()
+                            print()
                             event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2])
                         end
                     end
