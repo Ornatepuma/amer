@@ -1,4 +1,4 @@
-
+repeat task.wait() until game:IsLoaded()
 repeat task.wait() until game.Players.LocalPlayer.PlayerGui.ClientGui.MenuScreen.LoadingScreen:FindFirstChild("Bloodlines") and game.Players.LocalPlayer.PlayerGui.ClientGui.MenuScreen.LoadingScreen.Bloodlines.ImageTransparency == 1
 local cont = game:GetService("Players").LocalPlayer.PlayerGui.ClientGui.MenuScreen.Menu.Continue
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
@@ -70,27 +70,64 @@ local blacklist = "bersaintral"
 -- Main
 
 -- Get Moderators
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local groupId = 7450839
+
 task.spawn(function()
-    print("Checking for moderators already in game")
-    for _, v in pairs(game.Players:GetPlayers()) do
-        if v:IsInGroup(7450839) and not v.Name == player.Name then
-            moderator = true
-            Fluent:Notify({
-                Title = "MODERATOR IN GAME",
-                Content = v.Name .. " IS A MODERATOR"
-            })
+    print("Checking for moderators in game...")
+
+    -- helper function to check if any moderators exist
+    local function checkForModerators()
+        local foundModerator = false
+
+        for _, v in ipairs(Players:GetPlayers()) do
+            if v ~= player then
+                local ok, result = pcall(function()
+                    return v:IsInGroup(groupId)
+                end)
+
+                if ok and result then
+                    foundModerator = true
+                    Fluent:Notify({
+                        Title = "MODERATOR IN GAME",
+                        Content = v.DisplayName .. " (" .. v.Name .. ") is a moderator"
+                    })
+                end
+            end
         end
+
+        -- update your global var based on actual result
+        moderator = foundModerator
     end
-    game.Players.PlayerAdded:Connect(function(v)
-        if v:IsInGroup(7450839) and not v.Name == player.Name then
+
+    -- initial scan
+    checkForModerators()
+
+    -- live updates when new players join
+    Players.PlayerAdded:Connect(function(v)
+        if v == player then return end
+        task.wait(1)
+        local ok, result = pcall(function()
+            return v:IsInGroup(groupId)
+        end)
+        if ok and result then
             moderator = true
             Fluent:Notify({
                 Title = "MODERATOR IN GAME",
-                Content = v.Name .. " IS A MODERATOR"
+                Content = v.DisplayName .. " (" .. v.Name .. ") is a moderator"
             })
         end
     end)
+
+    -- optionally detect when all moderators leave
+    Players.PlayerRemoving:Connect(function(v)
+        task.wait(0.5)
+        checkForModerators()
+    end)
 end)
+
+
 
 
 
@@ -98,6 +135,7 @@ local loadoutmenu = Tabs.Main:AddToggle("autoclick",{Title = "Auto Click Continu
 
 loadoutmenu:OnChanged(function(state)
     if state then
+        task.wait(3)
         firesignal(game:GetService("Players").LocalPlayer.PlayerGui.ClientGui.MenuScreen.Menu.Continue.MouseButton1Click)
         firesignal(game:GetService("Players").LocalPlayer.PlayerGui.ClientGui.MenuScreen.Menu.Continue.Activated)
         firesignal(game:GetService("Players").LocalPlayer.PlayerGui.ClientGui.MenuScreen.Menu.Continue.MouseButton1Down)
@@ -113,7 +151,7 @@ illu_noti:OnChanged(function(state)
                 task.wait(1)
                 for _, cooldown in pairs(game.ReplicatedStorage.Cooldowns:GetChildren()) do
                     for _, cdName in pairs(cooldown:GetChildren()) do
-                        if cdName.Name == "Chakra Sense" and not cdName.Name == blacklist then
+                        if cdName.Name == "Chakra Sense" and not cdName.Name == blacklist and cooldown.Name ~= player.Name then
                             illu = true
                             local illuname = cooldown.Name
                              for _, v in pairs(workspace:GetChildren()) do
@@ -136,11 +174,10 @@ illu_noti:OnChanged(function(state)
                 for _, setting in pairs(game.ReplicatedStorage.Settings:GetDescendants()) do
                     if setting:IsA("StringValue") then
                         if setting.Value == "Chakra Sense" then
-                            illu = true
                             local illuname = setting.Name
                             for _, live in pairs(workspace:GetChildren()) do
-                                if live.Name == illuname then
-                                    
+                                if live.Name == illuname and live.Name ~= player.Name then
+                                    illu = true
                                     local livehumanoid = live:FindFirstChild("Humanoid")
                                     if livehumanoid and not detected[illuname] then
                                         local displayname = tostring(livehumanoid.DisplayName)
@@ -200,7 +237,7 @@ for i, v in pairs(workspace:GetChildren()) do
     end
 end
 
--- auto pickup
+-- auto pickup autopickup
 local params = OverlapParams.new()
 params.FilterDescendantsInstances = fd
 params.FilterType = Enum.RaycastFilterType.Exclude
@@ -217,6 +254,11 @@ pick:OnChanged(function(state)
                         event:FireServer("PickUp", v.ID.Value)
                     elseif v:FindFirstChild("SpawnTime") and v:FindFirstChild("ItemDetector") then
                         fireclickdetector(v.ItemDetector)
+                    elseif v:FindFirstChild("ItemOwner") then
+                        if v.Name == player.Name then
+                            firetouchinterest(v.TouchInterest)
+                            print(v.Name)
+                        end
                     end
                 end
             end
@@ -646,42 +688,57 @@ local thing = true
 print("fruit summon")
 fruitsummon:OnChanged(function(state)
     if state then
-        task.spawn(function()
-            while fruitsummon.Value do
-                if illu or moderator then
-                    repeat task.wait() until game:GetService("Players").LocalPlayer.PlayerGui.ClientGui.Mainframe.Danger.Visible == false
-                    getservers()
-                    repeat task.wait(.1) event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2]) until HumanoidRootPart == nil
-                else    
-                    event:FireServer("startSkill", "Fruit Summoning", vector.create(2369.8818359375, 281.14227294921875, -874.48828125) , true, "MouseButton2")
-                    event:FireServer("ReleaseSkill")
-                    
-                end
-                if thing == true then
-                    task.spawn(function()
+        checkloaded()
+        task.wait(.4)
+        repeat task.wait() until loaded == true
+        if loaded and not illu or not moderator then
+            local ff = Character:FindFirstChild("ForceField")
+            if ff then
+                repeat
+                    game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+                    task.wait(0.05)
+                    game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+                    task.wait(1)
+                until not Character:FindFirstChild("ForceField")
+            end
+            pick:SetValue(true)
+            task.spawn(function()
+                while fruitsummon.Value do
+                    if illu then
+                        repeat task.wait() until game:GetService("Players").LocalPlayer.PlayerGui.ClientGui.Mainframe.Danger.Visible == false
+                        getservers()
+                        repeat task.wait(.1) event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2]) until HumanoidRootPart == nil
+                    else    
+                        event:FireServer("startSkill", "Fruit Summoning", vector.create(2369.8818359375, 281.14227294921875, -874.48828125) , true, "MouseButton2")
+                        event:FireServer("ReleaseSkill")
+                        
+                    end
+                    if thing == true and hopifnear == true then
                         thing = false
-                        while task.wait(.1) do
-                            for i, v in pairs(game.Workspace:GetChildren()) do
-                                if v:FindFirstChild("Humanoid") and v.Name ~= player.Name then
-                                    for _, plr in pairs(game.Players:GetChildren()) do
-                                        if v.Name == player.Name then
-                                            local distance = (v.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
-                                            if distance < 100 then
-                                                print("hopped to player" .. distance, v.Name)
-                                                task.wait(1)
-                                                getservers()
-                                                repeat task.wait(.1) event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2]) until HumanoidRootPart == nil
+                        task.spawn(function()
+                            while task.wait(.1) do
+                                for i, v in pairs(game.Workspace:GetChildren()) do
+                                    if v:FindFirstChild("Humanoid") and v.Name ~= player.Name then
+                                        for _, plr in pairs(game.Players:GetChildren()) do
+                                            if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                                                local distance = (v.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
+                                                if distance < 100 then
+                                                    print("hopped to player" .. distance, v.Name)
+                                                    task.wait(1)
+                                                    getservers()
+                                                    repeat task.wait(.1) event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2]) until HumanoidRootPart == nil
+                                                end
                                             end
                                         end
                                     end
                                 end
                             end
-                        end
-                    end)
+                        end)
+                    end
+                    task.wait(13.1)
                 end
-                task.wait(13.1)
-            end
-        end)
+            end)
+        end
     end
 end)
 -- auto Sell fruits autosell
