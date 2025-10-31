@@ -293,7 +293,7 @@ end)
 
 
 -- TELEPORT
-print("servver hop")
+[[--print("servver hop")
 local serverhop = Tabs.Teleport:AddButton({
     Title = "Hop Server",
     Description = "Change To A Different Server",
@@ -319,7 +319,7 @@ local serverhop = Tabs.Teleport:AddButton({
         })
         
     end
-    })
+    })]]
 
 
 
@@ -528,10 +528,10 @@ hoponillu:OnChanged(function(state)
             task.spawn(function()
                 while task.wait(.1) do
                     if illu or moderator and startbot then
-                        getservers()
+                        -- getservers()
                         while illu or moderator and startbot do
-                            getservers()
-                            event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2])
+                            --getservers()
+                            --event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2])
                             print("hopping on illu")
                             task.wait(.1)
                         end
@@ -554,14 +554,14 @@ startbot:OnChanged(function(state)
                 task.wait(5)
                 while startbot.Value do
                     local Golem = workspace:FindFirstChild("Wooden Golem") 
-                    getservers()
+                    --getservers()
                     if Golem == nil then
-                        repeat task.wait(.1) event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2]) until HumanoidRootPart == nil
+                        -- repeat task.wait(.1) event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2]) until HumanoidRootPart == nil
                         print("no golem found hopping")
                     end
                     local GolemRoot = Golem:FindFirstChild("HumanoidRootPart")
                     if GolemRoot == nil then
-                        repeat task.wait(.1) event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2]) until HumanoidRootPart == nil
+                        -- repeat task.wait(.1) event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2]) until HumanoidRootPart == nil
                         print("no golem root found hopping")
                     end
                     local badandevil = {"rbxassetid://120758909308511","rbxassetid://116907126244057"}
@@ -644,9 +644,9 @@ startbot:OnChanged(function(state)
                         end
                     end
                     while true do
-                        getservers()
+                        -- getservers()
                         task.wait(1)
-                        event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2])
+                        -- event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2])
                     end
                 end
             end)
@@ -668,8 +668,8 @@ hopifnear:OnChanged(function(state)
                             local distance = (v.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
                             local golemdistance = (v.HumanoidRootPart.Position - workspace:WaitForChild("Wooden Golem").HumanoidRootPart.Position).Magnitude
                             if distance < 1 or golemdistance < 250 then
-                                getservers()
-                                repeat task.wait(.1) event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2]) until HumanoidRootPart == nil
+                                -- getservers()
+                                -- repeat task.wait(.1) event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2]) until HumanoidRootPart == nil
                             end
                         end
                     end
@@ -706,8 +706,8 @@ fruitsummon:OnChanged(function(state)
                 while fruitsummon.Value do
                     if illu then
                         repeat task.wait() until game:GetService("Players").LocalPlayer.PlayerGui.ClientGui.Mainframe.Danger.Visible == false
-                        getservers()
-                        repeat task.wait(.1) event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2]) until HumanoidRootPart == nil
+                        -- getservers()
+                        -- repeat task.wait(.1) event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2]) until HumanoidRootPart == nil
                     else    
                         event:FireServer("startSkill", "Fruit Summoning", vector.create(2369.8818359375, 281.14227294921875, -874.48828125) , true, "MouseButton2")
                         event:FireServer("ReleaseSkill")
@@ -725,8 +725,8 @@ fruitsummon:OnChanged(function(state)
                                                 if distance < 100 then
                                                     print("hopped to player" .. distance, v.Name)
                                                     task.wait(1)
-                                                    getservers()
-                                                    repeat task.wait(.1) event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2]) until HumanoidRootPart == nil
+                                                    -- getservers()
+                                                    -- repeat task.wait(.1) event:FireServer("ServerTeleport", servers[math.random(1, #servers)][2]) until HumanoidRootPart == nil
                                                 end
                                             end
                                         end
